@@ -1,13 +1,15 @@
 class EmployeeWage
 {
     private val present = 1
+    private val empRatePerHour = 20
 
     fun getAttendance()
     {
-        if ((0..2).random() == present)
-            println("Employee is present.")
-        else
-            println("Employee is absent.")
+        var empHrs = 0
+        if ((0..1).random() == present)
+            empHrs = 8
+        val empWage = empHrs * empRatePerHour
+        println("Employee Wage Per Day = $empWage")
     }
 }
 
