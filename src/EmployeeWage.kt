@@ -3,15 +3,21 @@ class EmployeeWageComputation
     private val present = 1
     private val partTime = 2
     private val empRatePerHour = 20
+    private val workingDays = 20
 
     private fun getWorkingHours(): Int
     {
-        return when ((0..2).random())
+        var totalEmpHrs = 0
+        for (day in 1..workingDays)
         {
-            present -> 8
-            partTime -> 4
-            else -> 0
+            totalEmpHrs += when ((0..2).random())
+            {
+                present -> 8
+                partTime -> 4
+                else -> 0
+            }
         }
+        return totalEmpHrs
     }
 
     fun getEmployeeWage()
