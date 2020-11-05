@@ -9,46 +9,59 @@ class EmployeeWageComputation
     private val empRatePerHour = 20
     private val workingDays = 20
     private val workingHours = 100
+    private var totalNumberOfEmployee: Int = 0
 
-    private fun writeToCSVFile(dailyHours: MutableMap<String, Int>)
+    private fun writeToCSVFile(employeeDetails: MutableList<Employee>)
     {
-        val csvHeader = "Day,Wage"
+        val csvHeader = "Employee,Day,Wage"
         val file = File("EmployeeWageDetails.csv")
         file.writeText(csvHeader)
-        dailyHours.forEach { (day, hours) -> file.appendText("\n$day,${hours * empRatePerHour}") }
+        employeeDetails.forEach { employee -> file.appendText("\n${employee.name}, ${employee.day}, ${employee.wage}") }
     }
 
-    private fun getWorkingHours(): Int
+    private fun getWorkingHours(): Map<String, Int>
     {
-        var totalEmpHrs = 0
-        var daysCount = 0
-        val dailyWorkingHours = mutableMapOf<String, Int>()
+        val employeeDetails = mutableListOf<Employee>()
+        val employeeWages = mutableMapOf<String, Int>()
 
-        while (daysCount < workingDays && totalEmpHrs < workingHours)
+        for (employee in 1..totalNumberOfEmployee)
         {
-            daysCount ++
-            val dailyHours = when ((0..2).random())
+            var totalEmpHrs = 0
+            var daysCount = 0
+
+            while (daysCount < workingDays && totalEmpHrs < workingHours)
             {
-                present -> 8
-                partTime -> 4
-                else -> 0
+                daysCount++
+                val dailyHours = when ((0..2).random())
+                {
+                    present -> 8
+                    partTime -> 4
+                    else -> 0
+                }
+                employeeDetails.add(Employee("Employee_$employee", "Day_$daysCount", dailyHours * empRatePerHour))
+                totalEmpHrs += dailyHours
             }
-            dailyWorkingHours["Day: $daysCount"] = dailyHours
-            totalEmpHrs += dailyHours
+            employeeWages["Employee_$employee"] = totalEmpHrs * empRatePerHour
         }
-        writeToCSVFile(dailyWorkingHours)
-        return totalEmpHrs
+        writeToCSVFile(employeeDetails)
+        return employeeWages
     }
 
-    fun printEmployeeWage()
+    private fun printEmployeeWage()
     {
-        val empWage = getWorkingHours() * empRatePerHour
-        println("Employee Wage Per Day = $empWage")
+        getWorkingHours().forEach{ (emp, wage) -> println("Monthly Wage of $emp = $wage") }
+    }
+
+    fun displayOnConsole()
+    {
+        print("Welcome to Employee Wage Computation\n\nEnter the number of Employee: ")
+        totalNumberOfEmployee = Integer.valueOf(readLine())
+        printEmployeeWage()
     }
 }
 
 fun main()
 {
     val empWage = EmployeeWageComputation()
-    empWage.printEmployeeWage()
+    empWage.displayOnConsole()
 }
