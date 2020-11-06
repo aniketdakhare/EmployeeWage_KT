@@ -7,23 +7,36 @@ class EmployeeWageComputation
     private val present = 1
     private val partTime = 2
     private var headerCheck = false
+    private val companyList = mutableListOf<Company>()
 
-    private fun writeToCSVFile(employeeDetails: MutableList<Employee>)
+    private fun writeToCSVFile(employeeDetails: List<Employee>)
     {
-        val csvHeader = "Employee,Month,Day,Wage"
+        val csvHeader = "Employee,Company,Month,Day,Wage"
         val file = File("EmployeeWageDetails.csv")
         if (!headerCheck)
         {
             file.writeText(csvHeader)
             headerCheck = true
         }
-        employeeDetails.forEach { employee -> file.appendText("\n${employee.employeeName}," +
-                "${employee.companyName},${employee.month},${employee.day},${employee.wage}") }
+        employeeDetails.forEach { employee -> employee.wages.forEach{(day, wage) ->
+            file.appendText("\n${employee.employeeName},${employee.companyName},${employee.month},$day,$wage") }}
     }
 
-    private fun getWorkingHours(company: Company): List<Employee>
+    private fun getWorkingHours(): Int
     {
-        val employeeDetails = mutableListOf<Employee>()
+        val employeeCheck = (0..2).random()
+        return when (employeeCheck)
+        {
+            present -> 8
+            partTime -> 4
+            else -> 0
+        }
+    }
+
+
+
+    private fun employeeWageBuilder(company: Company): List<Employee>
+    {
         val employeeWages = mutableListOf<Employee>()
 
         for (employee in 1..company.totalNumberOfEmployee)
@@ -32,31 +45,26 @@ class EmployeeWageComputation
             {
                 var totalEmpHrs = 0
                 var daysCount = 0
+                val dailyWages = mutableMapOf<String, Int>()
 
                 while (daysCount < company.totalWorkingDays && totalEmpHrs < company.totalWorkingHours)
                 {
                     daysCount++
-                    val dailyHours = when ((0..2).random())
-                    {
-                        present -> 8
-                        partTime -> 4
-                        else -> 0
-                    }
-                    employeeDetails.add(Employee("Employee_$employee", company.name, "Month_$month",
-                        "Day_$daysCount", dailyHours * company.empRatePerHour))
+                    val dailyHours = getWorkingHours()
+                    dailyWages["Day_$daysCount"] = dailyHours * company.empRatePerHour
                     totalEmpHrs += dailyHours
                 }
                 employeeWages.add(Employee("Employee_$employee", company.name, "Month_$month"
-                    , wage = totalEmpHrs * company.empRatePerHour))
+                    , wages = dailyWages))
+                company.totalWage += (totalEmpHrs * company.empRatePerHour)
+                companyList.add(company)
             }
         }
-        writeToCSVFile(employeeDetails)
         return employeeWages
     }
 
-    private fun wageLoader()
+    private fun getCompanyDetails(): Company
     {
-
         print("\nEnter your company name: ")
         val companyName = readLine().toString()
         print("\nEnter companies employee rate per hour: ")
@@ -69,10 +77,17 @@ class EmployeeWageComputation
         val totalNumberOfEmployee = Integer.valueOf(readLine())
         print("\nEnter number of months: ")
         val numberOfMonths = Integer.valueOf(readLine())
+        return Company(companyName, empRatePerHour, totalWorkingDays, totalWorkingHours, totalNumberOfEmployee,
+            numberOfMonths)
+    }
+
+    private fun wageLoader()
+    {
+        val employees = employeeWageBuilder(getCompanyDetails())
+        writeToCSVFile(employees)
         println("\n\n-------------------------------------------------------------------------------------------------")
-        getWorkingHours(Company(companyName, empRatePerHour, totalWorkingDays, totalWorkingHours, totalNumberOfEmployee,
-            numberOfMonths)).forEach{ employee -> println("${employee.employeeName} working in " +
-                "${employee.companyName} has ${employee.month} salary as ${employee.wage}") }
+        employees.forEach{ employee -> println("${employee.employeeName} working in " +
+                "${employee.companyName} has ${employee.month} salary as ${employee.getMonthlyWage()}") }
         println("-------------------------------------------------------------------------------------------------\n")
     }
 
