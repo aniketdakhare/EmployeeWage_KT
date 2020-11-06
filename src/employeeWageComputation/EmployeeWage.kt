@@ -33,8 +33,6 @@ class EmployeeWageComputation
         }
     }
 
-
-
     private fun employeeWageBuilder(company: Company): List<Employee>
     {
         val employeeWages = mutableListOf<Employee>()
@@ -56,17 +54,20 @@ class EmployeeWageComputation
                 }
                 employeeWages.add(Employee("Employee_$employee", company.name, "Month_$month"
                     , wages = dailyWages))
-                company.totalWage += (totalEmpHrs * company.empRatePerHour)
-                companyList.add(company)
             }
         }
         return employeeWages
     }
 
-    private fun getCompanyDetails(): Company
+    private fun getCompanyName(): String
     {
         print("\nEnter your company name: ")
-        val companyName = readLine().toString()
+        return readLine().toString()
+    }
+
+    private fun getCompanyDetails(): Company
+    {
+        val companyName = getCompanyName()
         print("\nEnter companies employee rate per hour: ")
         val empRatePerHour = Integer.valueOf(readLine())
         print("\nEnter total number of working days in a month: ")
@@ -83,12 +84,28 @@ class EmployeeWageComputation
 
     private fun wageLoader()
     {
-        val employees = employeeWageBuilder(getCompanyDetails())
+        val companyDetails = getCompanyDetails()
+        val employees = employeeWageBuilder(companyDetails)
         writeToCSVFile(employees)
+        companyDetails.employeeDetails = employees
+        companyList.add(companyDetails)
+    }
+
+    private fun displayDetails()
+    {
+        val companyName = getCompanyName()
         println("\n\n-------------------------------------------------------------------------------------------------")
-        employees.forEach{ employee -> println("${employee.employeeName} working in " +
+        companyList.find{ it.name == companyName}
+            ?.employeeDetails?.forEach{ employee -> println("${employee.employeeName} working in " +
                 "${employee.companyName} has ${employee.month} salary as ${employee.getMonthlyWage()}") }
         println("-------------------------------------------------------------------------------------------------\n")
+    }
+
+    private fun displayTotalWageOfCompany()
+    {
+        val companyName = getCompanyName()
+        val companiesTotalWage = companyList.find { it.name == companyName }?.getTotalWageOfCompany()
+        println("Total wage of $companyName is  $companiesTotalWage")
     }
 
     fun presentChoice()
@@ -97,11 +114,14 @@ class EmployeeWageComputation
         var flag = 1
         while (flag == 1)
         {
-            println("\nSelect your choice. \n1: Calculate Employee wage for your company. \n2: Exit")
+            println("\nSelect your choice. \n1: Calculate Employee wage for your company. \n2: Display Details." +
+                    "\n3: Get total wage of company. \n4: Exit")
             when (Integer.valueOf(readLine()))
             {
                 1 -> wageLoader()
-                2 -> flag = 0
+                2 -> displayDetails()
+                3 -> displayTotalWageOfCompany()
+                4 -> flag = 0
                 else -> println("\nInvalid Input")
             }
         }
