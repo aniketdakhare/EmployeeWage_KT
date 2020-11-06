@@ -91,13 +91,33 @@ class EmployeeWageComputation
         companyList.add(companyDetails)
     }
 
+    private fun printEmployeeDetails(employeeDetails: List<Employee>?)
+    {
+        employeeDetails?.forEach{ employee -> println("${employee.employeeName} working in " +
+                "${employee.companyName} has ${employee.month} salary as ${employee.getMonthlyWage()}") }
+    }
+
+    private fun sortBy(employeeDetails: List<Employee>?)
+    {
+        var empDetails: List<Employee>? = listOf()
+        println("\nSelect your choice. \n1: Sort by monthly wage.")
+        when (Integer.valueOf(readLine()))
+        {
+            1 -> {
+                    empDetails = employeeDetails?.sortedBy { it.getMonthlyWage() }
+                 }
+            else -> println("Invalid Input")
+        }
+        printEmployeeDetails(empDetails)
+    }
+
     private fun displayDetails()
     {
         val companyName = getCompanyName()
         println("\n\n-------------------------------------------------------------------------------------------------")
-        companyList.find{ it.name == companyName}
-            ?.employeeDetails?.forEach{ employee -> println("${employee.employeeName} working in " +
-                "${employee.companyName} has ${employee.month} salary as ${employee.getMonthlyWage()}") }
+        val employeeDetails = companyList.find{ it.name == companyName}
+            ?.employeeDetails
+        sortBy(employeeDetails)
         println("-------------------------------------------------------------------------------------------------\n")
     }
 
