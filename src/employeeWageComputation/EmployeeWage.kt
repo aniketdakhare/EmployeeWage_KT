@@ -91,24 +91,30 @@ class EmployeeWageComputation
         companyList.add(companyDetails)
     }
 
-    private fun printEmployeeDetails(employeeDetails: List<Employee>?)
+    private fun sortByMonthlyWage(employeeDetails: List<Employee>?)
     {
-        employeeDetails?.forEach{ employee -> println("${employee.employeeName} working in " +
-                "${employee.companyName} has ${employee.month} salary as ${employee.getMonthlyWage()}") }
+        employeeDetails?.sortedBy { it.getMonthlyWage() }?.forEach{ employee -> println("${employee.employeeName} " +
+                "working in ${employee.companyName} has ${employee.month} salary as ${employee.getMonthlyWage()}") }
+    }
+
+    private fun sortByDailyWage(employeeDetails: List<Employee>?)
+    {
+        val employeeList = mutableListOf<Employee>()
+        employeeDetails?.forEach { employee -> employee.wages.forEach{(day, wage) -> employeeList
+            .add(Employee(employee.employeeName, employee.companyName, employee.month, day = day, dailyWage = wage)) }}
+        employeeList.sortedBy { it.dailyWage }.forEach{ employee -> println("${employee.employeeName} working in " +
+                "${employee.companyName} has ${employee.month}'s ${employee.day} salary as ${employee.dailyWage}") }
     }
 
     private fun sortBy(employeeDetails: List<Employee>?)
     {
-        var empDetails: List<Employee>? = listOf()
-        println("\nSelect your choice. \n1: Sort by monthly wage.")
+        println("\nSelect your choice. \n1: Sort by monthly wage. \n2: Sort by daily Wage")
         when (Integer.valueOf(readLine()))
         {
-            1 -> {
-                    empDetails = employeeDetails?.sortedBy { it.getMonthlyWage() }
-                 }
+            1 -> sortByMonthlyWage(employeeDetails)
+            2 -> sortByDailyWage(employeeDetails)
             else -> println("Invalid Input")
         }
-        printEmployeeDetails(empDetails)
     }
 
     private fun displayDetails()
