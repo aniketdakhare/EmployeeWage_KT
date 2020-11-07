@@ -108,13 +108,22 @@ class EmployeeWageComputation
 
     private fun sortBy(employeeDetails: List<Employee>?)
     {
-        println("\nSelect your choice. \n1: Sort by monthly wage. \n2: Sort by daily Wage")
+        println("\nSelect your choice. \n1: Display sorted list by monthly wages. \n2: Display sorted list by" +
+                " daily wages.")
         when (Integer.valueOf(readLine()))
         {
             1 -> sortByMonthlyWage(employeeDetails)
             2 -> sortByDailyWage(employeeDetails)
             else -> println("Invalid Input")
         }
+    }
+
+    private fun displayEmployeeByItsWagePerHour()
+    {
+        print("\nEnter Employee rate per hour: ")
+        val empRatePerHour = Integer.valueOf(readLine())
+        companyList.forEach { if (it.empRatePerHour == empRatePerHour) for (emp in 1 .. it.totalNumberOfEmployee)
+                println("Employee_$emp of ${it.name}") }
     }
 
     private fun displayDetails()
@@ -141,13 +150,14 @@ class EmployeeWageComputation
         while (flag == 1)
         {
             println("\nSelect your choice. \n1: Calculate Employee wage for your company. \n2: Display Details." +
-                    "\n3: Get total wage of company. \n4: Exit")
+                    "\n3: Get total wage of company. \n4: Display Employee Details as per given wage per hour. \n5: Exit")
             when (Integer.valueOf(readLine()))
             {
                 1 -> wageLoader()
                 2 -> displayDetails()
                 3 -> displayTotalWageOfCompany()
-                4 -> flag = 0
+                4-> displayEmployeeByItsWagePerHour()
+                5 -> flag = 0
                 else -> println("\nInvalid Input")
             }
         }
